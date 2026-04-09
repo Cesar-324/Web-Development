@@ -11,6 +11,10 @@ import {
 import type { GoogleBooksItem } from "../../types/types";
 
 const BookDetails = () => {
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.auth.isAuthenticated,
+  );
+
   const { id } = useParams<{ id: string }>();
 
   const dispatch = useDispatch();
@@ -33,11 +37,18 @@ const BookDetails = () => {
     : false;
 
   const handleRequestBook = () => {
+    if (!isAuthenticated) {
+      alert("You need to log in to request a book.");
+      return;
+    }
+
     if (book && !isAlreadyBorrowed) {
       dispatch(borrowBook({ ...book }));
       alert(`You have successfully requested "${book.title}"!`);
     }
   };
+
+  const isButtonDisabled = isAuthenticated && isAlreadyBorrowed;
 
   if (isLoading)
     return <div className="text-center py-12">Loading details...</div>;
@@ -81,14 +92,14 @@ const BookDetails = () => {
 
             <button
               onClick={handleRequestBook}
-              disabled={isAlreadyBorrowed}
+              disabled={isButtonDisabled}
               className={`font-bold py-2 px-6 rounded-full transition-colors ${
-                isAlreadyBorrowed
+                isButtonDisabled
                   ? "bg-gray-400 text-gray-200 cursor-not-allowed"
                   : "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
               }`}
             >
-              {isAlreadyBorrowed ? "Already Requested" : "Request Book"}
+              {isButtonDisabled ? "Already Requested" : "Request Book"}
             </button>
           </div>
         </div>

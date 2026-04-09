@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 interface FetchState<T> {
   data: T | null;
@@ -6,7 +6,10 @@ interface FetchState<T> {
   error: Error | null;
 }
 
-const useFetch = <T,>(url: string, transform?: (rawData: any) => T): FetchState<T> => {
+const useFetch = <T>(
+  url: string,
+  transform?: (rawData: any) => T,
+): FetchState<T> => {
   const [data, setData] = useState<T | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
@@ -22,12 +25,24 @@ const useFetch = <T,>(url: string, transform?: (rawData: any) => T): FetchState<
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(url);
+        const token = localStorage.getItem("token");
+
+        const isGoogleApi = url.includes("googleapis.com");
+
+        const response = await fetch(url, {
+          headers: {
+            "Content-Type": "application/json",
+            ...(token && !isGoogleApi
+              ? { Authorization: `Bearer ${token}` }
+              : {}),
+          },
+        });
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const result = await response.json();
-        
+
         if (isMounted) {
           const finalData = transform ? transform(result) : result;
           setData(finalData);
