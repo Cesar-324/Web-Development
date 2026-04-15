@@ -13,14 +13,14 @@ const BookCard = ({ book }: BookCardProps) => {
       <img 
         src={book.coverUrl || PLACEHOLDER_IMAGE} 
         alt={`Cover of ${book.title}`} 
-        className="w-full h-80 object-cover bg-gray-200"
+        className="w-full h-32 sm:h-44 md:h-56 object-cover bg-gray-200"
         onError={(e) => {
           (e.target as HTMLImageElement).src = PLACEHOLDER_IMAGE;
         }}
       />
-      <div className="p-4 flex flex-col gap-2 flex-grow">
-        <h3 className="text-lg font-semibold leading-tight text-gray-900 dark:text-white">{book.title}</h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400">Author: {book.author}</p>
+      <div className="p-2 sm:p-3 md:p-4 flex flex-col gap-1 flex-grow">
+        <h3 className="text-xs sm:text-sm md:text-base font-semibold leading-tight text-gray-900 dark:text-white line-clamp-2">{book.title}</h3>
+        <p className="text-xs text-gray-600 dark:text-gray-400 truncate">by {book.author}</p>
       </div>
     </Link>
   );

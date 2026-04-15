@@ -9,6 +9,9 @@ import {
   FALLBACK_COVER,
 } from "../../services/bookService";
 import type { GoogleBooksItem } from "../../types/types";
+import toast from "react-hot-toast";
+import confetti from "canvas-confetti";
+import { BookDetailsSkeleton } from "../ui/SkeletonLoader";
 
 const BookDetails = () => {
   const isAuthenticated = useSelector(
@@ -38,20 +41,25 @@ const BookDetails = () => {
 
   const handleRequestBook = () => {
     if (!isAuthenticated) {
-      alert("You need to log in to request a book.");
+      toast.error("You need to log in to request a book.");
       return;
     }
 
     if (book && !isAlreadyBorrowed) {
       dispatch(borrowBook({ ...book }));
-      alert(`You have successfully requested "${book.title}"!`);
+      toast.success(`"${book.title}" successfully requested!`);
+      confetti({
+        particleCount: 150,
+        spread: 80,
+        origin: { y: 0.6 },
+        colors: ["#2563eb", "#7c3aed", "#059669", "#f59e0b", "#ec4899"],
+      });
     }
   };
 
   const isButtonDisabled = isAuthenticated && isAlreadyBorrowed;
 
-  if (isLoading)
-    return <div className="text-center py-12">Loading details...</div>;
+  if (isLoading) return <BookDetailsSkeleton />;
   if (error)
     return (
       <div className="text-center py-12 text-red-500">{error.message}</div>
@@ -93,10 +101,10 @@ const BookDetails = () => {
             <button
               onClick={handleRequestBook}
               disabled={isButtonDisabled}
-              className={`font-bold py-2 px-6 rounded-full transition-colors ${
+              className={`font-bold py-2 px-6 rounded-full transition-all duration-200 active:scale-95 ${
                 isButtonDisabled
                   ? "bg-gray-400 text-gray-200 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+                  : "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer hover:shadow-lg"
               }`}
             >
               {isButtonDisabled ? "Already Requested" : "Request Book"}

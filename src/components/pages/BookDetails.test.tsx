@@ -6,6 +6,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import BookDetails from "./BookDetails";
 import authReducer from "../../store/authSlice";
 import loansReducer from "../../store/loansSlice";
+import * as toastModule from "react-hot-toast";
 
 const mockBook = {
   id: "1",
@@ -69,8 +70,10 @@ describe("BookDetails Component", () => {
     });
   });
 
-  it("should trigger an alert if the user is NOT authenticated and tries to request a book", async () => {
-    const alertMock = vi.spyOn(window, "alert").mockImplementation(() => {});
+  it("should trigger a toast error if the user is NOT authenticated and tries to request a book", async () => {
+    const toastErrorSpy = vi
+      .spyOn(toastModule.default, "error")
+      .mockImplementation(() => "toast-id");
 
     renderWithProviders();
 
@@ -82,11 +85,11 @@ describe("BookDetails Component", () => {
 
     fireEvent.click(button);
 
-    expect(alertMock).toHaveBeenCalledWith(
+    expect(toastErrorSpy).toHaveBeenCalledWith(
       "You need to log in to request a book.",
     );
 
-    alertMock.mockRestore();
+    toastErrorSpy.mockRestore();
   });
 
   it("should allow requesting the book if the user IS authenticated", async () => {

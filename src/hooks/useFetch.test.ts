@@ -50,6 +50,7 @@ describe("useFetch Custom Hook", () => {
   });
 
   it("It shouldn't fetch if the URL is empty (Cache Bypass)", () => {
+    globalThis.fetch = vi.fn();
     const { result } = renderHook(() => useFetch(""));
 
     expect(result.current.isLoading).toBe(false);
